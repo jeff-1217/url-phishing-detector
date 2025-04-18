@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Phishing Detector</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-cover bg-center" style="background-image: url('/static/background.jpg');">
+  <div class="max-w-xl mx-auto bg-white bg-opacity-80 p-6 rounded shadow mt-8">
+    <h1 class="text-2xl mb-4 font-bold">URL Phishing Detector</h1>
+    <form method="POST">
+      <input name="url" type="url" required placeholder="https://example.com" class="w-full p-2 border rounded mb-4">
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Scan URL</button>
+    </form>
+
+    {% if result %}
+    <div class="mt-6">
+      <h2 class="text-xl font-semibold">Results for {{ result.url }}</h2>
+      <p class="mt-2">Safe Browsing: <span class="font-bold">{{ 'Clean' if result.safe_browsing else 'Phishing/Malicious' }}</span></p>
+      <h3 class="mt-4 font-semibold">Lexical Analysis</h3>
+      <ul class="list-disc list-inside">
+        <li>Length: {{ result.lexical.length }}</li>
+        <li>Digits: {{ result.lexical.digits }}</li>
+        <li>Special Chars: {{ result.lexical.special_chars }}</li>
+        <li>Subdomains: {{ result.lexical.subdomains }}</li>
+        <li>IP Addr. Hostname: {{ 'Yes' if result.lexical.is_ip else 'No' }}</li>
+        <li>Risk Score (0-100): <span class="font-bold">{{ result.lexical.risk_score }}</span></li>
+      </ul>
+
+      {% if not result.safe_browsing %}
+      <h3 class="mt-4 font-semibold">Threat Matches</h3>
+      <pre class="bg-gray-100 p-2 rounded text-sm">{{ result.threat_matches | tojson(indent=2) }}</pre>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
